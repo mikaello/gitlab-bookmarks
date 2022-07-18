@@ -6,61 +6,57 @@ import (
 	"github.com/xanzy/go-gitlab"
 )
 
-// Create a GitLab client
+// Client creates a GitLab client for the given base URL and token.
 func Client(baseurl *string, token string) (gitlab.Client, error) {
 	url := *baseurl
 	c, err := gitlab.NewClient(token, gitlab.WithBaseURL(url+"/api/v4"))
 	return *c, err
 }
 
-func FindAllRepositories(c *gitlab.Client) ([]*gitlab.Project, error) {
-	projects, _, err := c.Projects.ListProjects(nil)
+// WhoAmI returns the user that is logged in to GitLab.
+func WhoAmI(c *gitlab.Client) (*gitlab.User, error) {
+	user, _, err := c.Users.CurrentUser()
+	return user, err
+}
+
+// FindAllRepositories returns all repositories that the user has access to,
+// up to the given maximum number of pages.
+func FindAllRepositories(c *gitlab.Client, maxPages int) ([]*gitlab.Project, error) {
+	listOptions := gitlab.ListOptions{ PerPage: 100, }
+	projects, response, err := c.Projects.ListProjects(&gitlab.ListProjectsOptions{
+		ListOptions: listOptions,
+	})
+
+	for {
+		if err != nil {
+			return nil, err
+		}
+
+		log.Printf("Page %d of %d (but max %d)", response.CurrentPage, response.TotalPages, maxPages)
+
+		if len(projects) == 0 {
+			break
+		} else if response.NextPage > maxPages {
+			break
+		}
+
+		proj := []*gitlab.Project{}
+		proj, response, err = c.Projects.ListProjects(&gitlab.ListProjectsOptions{
+			ListOptions: gitlab.ListOptions{
+				Page:    response.NextPage,
+				PerPage: 100,
+			},
+			Archived: gitlab.Bool(true),
+			//OrderBy:  gitlab.OrderByID,
+			//Sort:     gitlab.SortAsc
+		})
+		projects = append(projects, proj...)
+	}
+
 
 	if err != nil {
 		return projects, err
 	}
 
 	return projects, err
-
-}
-
-// Find a Container Registry by name
-func FindNamedRegistry(c *gitlab.Client, pid int, name string) (reg []int, err error) {
-	projectRepositories, _, err := c.ContainerRegistry.ListProjectRegistryRepositories(pid, &gitlab.ListRegistryRepositoriesOptions{})
-	if err != nil {
-		return reg, err
-	}
-	for _, r := range projectRepositories {
-		if r.Name == name {
-			reg = append(reg, r.ID)
-		}
-	}
-	return reg, err
-}
-
-// Find all Container Registry Repositories without any tags
-func FindEmptyRegistries(c *gitlab.Client, pid int) (reg []int, err error) {
-	projectRepositories, _, err := c.ContainerRegistry.ListProjectRegistryRepositories(pid, &gitlab.ListRegistryRepositoriesOptions{})
-	if err != nil {
-		return reg, err
-	}
-	for _, r := range projectRepositories {
-		t, _, err := c.ContainerRegistry.ListRegistryRepositoryTags(pid, r.ID, &gitlab.ListRegistryRepositoryTagsOptions{})
-		if err != nil {
-			return reg, err
-		}
-		if len(t) == 0 {
-			reg = append(reg, r.ID)
-		}
-	}
-	return reg, err
-}
-
-func DeleteRegistries(c *gitlab.Client, pid int, r []int) (err error) {
-	log.Print(r)
-	for i := range r {
-		log.Printf("Deleting repository with ID %d from project %v", r[i], pid)
-		c.ContainerRegistry.DeleteRegistryRepository(pid, r[i])
-	}
-	return err
 }

@@ -8,48 +8,37 @@ import (
 )
 
 var (
-	mode    *string
-	pid     *int
-	token   *string
-	name    *string
-	baseurl *string
+	token    *string
+	baseurl  *string
+	maxpages *int
 )
 
 func init() {
-
-	mode = flag.String("mode", "empty", "empty\n  deletes empty registries.\nby-name\n  deletes registries with a given name")
-	pid = flag.Int("pid", -1, "the GitLab project id")
-	token = flag.String("token", "", "a token with permissions in the project")
-	name = flag.String("name", "", "the name of a repo to delete when mode=by_name")
-	baseurl = flag.String("baseurl", "https://gitlab.com", "the base url of your gitlab instance, including protocol scheme")
+	token = flag.String("token", "", "a token with API read permissions")
+	baseurl = flag.String("baseurl", "https://gitlab.com", "the base url of your GitLab instance, including protocol scheme")
+	maxpages = flag.Int("maxpages", 2, "the maximum number of pages to fetch")
 }
 
 func main() {
-
 	flag.Parse()
 
-	var r []int
-	var err error
-	var p int = *pid
-
 	// create a GitLab client
-	c, err := git.Client(baseurl, *token)
+	client, err := git.Client(baseurl, *token)
 	if err != nil {
-		log.Printf("Error: %s", err)
+		log.Printf("Error creating GitLab client: %s", err)
 	}
 
-	switch {
-	case *mode == "empty":
-		r, err = git.FindEmptyRegistries(&c, p)
-	case *mode == "name":
-		r, err = git.FindNamedRegistry(&c, p, *name)
-	}
+	user, err := git.WhoAmI(&client)
 	if err != nil {
-		log.Printf("Error: %s", err)
+		log.Printf("You are not logged in to GitLab")
 	} else {
-		err := git.DeleteRegistries(&c, p, r)
-		if err != nil {
-			log.Printf("Error: %s", err)
-		}
+		log.Printf("You are using token of the user: %s", user.Username)
 	}
+
+	repos, err := git.FindAllRepositories(&client, *maxpages)
+	if err != nil {
+		log.Printf("Error fetching repositories: %s", err)
+	}
+
+	log.Printf("Found %d number of repositories", len(repos))
 }
