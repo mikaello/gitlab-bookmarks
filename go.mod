@@ -18,3 +18,4 @@ require (
 )
 
 replace github.io/gitlab-bookmarks/internal/git => ./internal/git
+replace github.io/gitlab-bookmarks/internal/bookmarks => ./internal/bookmarks

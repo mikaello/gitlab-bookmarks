@@ -5,6 +5,7 @@ import (
 	"log"
 
 	"github.io/gitlab-bookmarks/internal/git"
+	"github.io/gitlab-bookmarks/internal/bookmarks"
 )
 
 var (
@@ -41,4 +42,6 @@ func main() {
 	}
 
 	log.Printf("Found %d number of repositories", len(repos))
+
+	bookmarks.CreateBookmarkFile(repos)
 }
