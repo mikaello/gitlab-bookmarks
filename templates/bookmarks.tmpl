@@ -7,10 +7,10 @@
 <TITLE>Bookmarks</TITLE>
 <H1>Bookmarks</H1>
 <DL><p>
-    <DT><H3 ADD_DATE="1588614754" LAST_MODIFIED="1588614939" PERSONAL_TOOLBAR_FOLDER="true">Barra de favoritos</H3>
+    <DT><H3 ADD_DATE="1658268705" LAST_MODIFIED="1658268705" PERSONAL_TOOLBAR_FOLDER="false">GitLab projects</H3>
     <DL><p>
-        <DT><A HREF="https://www.google.com/webhp?hl=pt-BR&ictx=2&sa=X&ved=0ahUKEwj0s7Ge45rpAhWuDbkGHflbAdEQPQgH&safe=active" ADD_DATE="1588614918">Google</A>
+{{range $index, $item :=. }}
+        <DT><A HREF="{{$item.WebURL}}" ADD_DATE="{{$item.LastActivityAt.Unix}}">{{$item.Name}}</A>{{end}}
     </DL><p>
-    <DT><A HREF="https://www.reddit.com/" ADD_DATE="1588614939">reddit: the front page of the internet</A>
 </DL><p>
 {{end}}

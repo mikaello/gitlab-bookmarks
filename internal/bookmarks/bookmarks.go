@@ -9,6 +9,9 @@ import (
 	"github.com/xanzy/go-gitlab"
 )
 
+// Credit: https://betterprogramming.pub/how-to-generate-html-with-golang-templates-5fad0d91252
+// and https://pkg.go.dev/html/template
+
 // CreateBookmarkFile creates a bookmark file for the given repositories.
 func CreateBookmarkFile(projects []*gitlab.Project) {
 	allFiles := []string{"bookmarks.tmpl"}
