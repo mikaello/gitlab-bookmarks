@@ -10,7 +10,7 @@ Usage of ./gitlab-bookmarks:
   -baseurl string
         the base url of your GitLab instance, including protocol scheme (default "https://gitlab.com")
   -maxpages int
-        the maximum number of pages to fetch (default 2, 100 per page)
+        the maximum number of pages to fetch, GitLab API is paginated (default 2, 100 per page)
   -token string
         a token with API read permissions (not necessary, but only public projects without)
 ```
@@ -23,4 +23,18 @@ exist for your system), or build with go:
 
 ```shell
 go build -o gitlab-bookmarks cmd/provision/main.go
+```
+
+## Development
+
+Compile and run by running:
+
+```shell
+go run cmd/provision/main.go
+```
+
+With params:
+
+```shell
+go run cmd/provision/main.go -baseurl https://your-gitlab.com
 ```
