@@ -3,32 +3,38 @@ package bookmarks
 import (
 	"bufio"
 	"bytes"
+	"embed"
 	"html/template"
+	"log"
 	"os"
 
 	"github.com/xanzy/go-gitlab"
 )
 
+//go:embed bookmarks.tmpl
+var bookmarksTmpl embed.FS
+
 // Credit: https://betterprogramming.pub/how-to-generate-html-with-golang-templates-5fad0d91252
 // and https://pkg.go.dev/html/template
 
 // CreateBookmarkFile creates a bookmark file for the given repositories.
-func CreateBookmarkFile(projects []*gitlab.Project) {
-	allFiles := []string{"bookmarks.tmpl"}
-
-	var allPaths []string
-	for _, tmpl := range allFiles {
-		allPaths = append(allPaths, "./templates/"+tmpl)
-	}
-
-	templates := template.Must(template.New("").ParseFiles(allPaths...))
+func CreateBookmarkHtml(projects []*gitlab.Project) string {
+	templates := template.Must(template.New("").ParseFS(bookmarksTmpl, "bookmarks.tmpl"))
 
 	var processed bytes.Buffer
-	templates.ExecuteTemplate(&processed, "bookmarks", projects)
+	err := templates.ExecuteTemplate(&processed, "bookmarks", projects)
 
-	outputPath := "./bookmarks.html"
+	if err != nil {
+		log.Fatalf("Could not execute bookmarks template: %s", err)
+	}
+
+	return processed.String()
+}
+
+func WriteBookmarkFile(filename string, htmlContent string) {
+	outputPath := "./" + filename
 	f, _ := os.Create(outputPath)
 	w := bufio.NewWriter(f)
-	w.WriteString(processed.String())
+	w.WriteString(htmlContent)
 	w.Flush()
 }
