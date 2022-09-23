@@ -22,7 +22,7 @@ func WhoAmI(c *gitlab.Client) (*gitlab.User, error) {
 // FindAllRepositories returns all repositories that the user has access to,
 // up to the given maximum number of pages.
 func FindAllRepositories(c *gitlab.Client, maxPages int) ([]*gitlab.Project, error) {
-	listOptions := gitlab.ListOptions{ PerPage: 100, }
+	listOptions := gitlab.ListOptions{PerPage: 100}
 	projects, response, err := c.Projects.ListProjects(&gitlab.ListProjectsOptions{
 		ListOptions: listOptions,
 	})
@@ -51,11 +51,6 @@ func FindAllRepositories(c *gitlab.Client, maxPages int) ([]*gitlab.Project, err
 			//Sort:     gitlab.SortAsc
 		})
 		projects = append(projects, proj...)
-	}
-
-
-	if err != nil {
-		return projects, err
 	}
 
 	return projects, err
