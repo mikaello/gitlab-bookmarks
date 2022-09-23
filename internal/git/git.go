@@ -21,37 +21,42 @@ func WhoAmI(c *gitlab.Client) (*gitlab.User, error) {
 
 // FindAllRepositories returns all repositories that the user has access to,
 // up to the given maximum number of pages.
+// See also pagination example https://github.com/xanzy/go-gitlab/blob/master/examples/pagination.go
 func FindAllRepositories(c *gitlab.Client, maxPages int) ([]*gitlab.Project, error) {
-	listOptions := gitlab.ListOptions{PerPage: 100}
-	projects, response, err := c.Projects.ListProjects(&gitlab.ListProjectsOptions{
-		ListOptions: listOptions,
-	})
+	options := &gitlab.ListProjectsOptions{
+		ListOptions: gitlab.ListOptions{
+			Page:    1,
+			PerPage: 100,
+		},
+		//Archived: gitlab.Bool(true),
+		//OrderBy:  gitlab.OrderByID,
+		//Sort:     gitlab.SortAsc
+	}
+
+	var totalProjects []*gitlab.Project
+	var err error
 
 	for {
+		projects, response, err := c.Projects.ListProjects(options)
 		if err != nil {
 			return nil, err
 		}
 
-		log.Printf("Page %d of %d (but max %d)", response.CurrentPage, response.TotalPages, maxPages)
-
 		if len(projects) == 0 {
-			break
-		} else if response.NextPage > maxPages {
 			break
 		}
 
-		proj := []*gitlab.Project{}
-		proj, response, err = c.Projects.ListProjects(&gitlab.ListProjectsOptions{
-			ListOptions: gitlab.ListOptions{
-				Page:    response.NextPage,
-				PerPage: 100,
-			},
-			Archived: gitlab.Bool(true),
-			//OrderBy:  gitlab.OrderByID,
-			//Sort:     gitlab.SortAsc
-		})
-		projects = append(projects, proj...)
+		log.Printf("Page %d of %d (but max %d)", response.CurrentPage, response.TotalPages, maxPages)
+
+		totalProjects = append(totalProjects, projects...)
+		options.Page = response.NextPage
+
+		if response.CurrentPage == maxPages {
+			break
+		} else if response.NextPage == 0 {
+			break
+		}
 	}
 
-	return projects, err
+	return totalProjects, err
 }
