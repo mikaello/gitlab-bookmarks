@@ -2,6 +2,12 @@
 
 Tool to fetch projects from GitLab to provision your bookmarks.
 
+Run this tool with the GitLab instance of your choice, it will use the API and
+gather all projects into a file called `bookmarks.html`. This file follows the
+bookmarks format expected by browsers for importing. So open your favourite
+browser and import the generated `bookmarks.html` file, you can now use the
+adress bar to search for projects of the chosen GitLab instance.
+
 ## Usage:
 
 ```
