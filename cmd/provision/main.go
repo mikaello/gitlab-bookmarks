@@ -26,7 +26,7 @@ func main() {
 
 	_, err := url.ParseRequestURI(*baseurl)
 	if err != nil {
-		log.Fatalf("baseURL '%s' is invalid, %s", *baseurl, err)
+		log.Fatalf("baseURL is invalid, '%s': %s", *baseurl, err)
 	}
 
 	// create a GitLab client
@@ -37,7 +37,7 @@ func main() {
 
 	user, err := git.WhoAmI(&client)
 	if err != nil {
-		log.Printf("You are not logged in to GitLab, will only fetch public repositories")
+		log.Printf("You are not logged in to GitLab, only public repositories will be fetched")
 	} else {
 		log.Printf("You are using token of the user: %s", user.Username)
 	}
