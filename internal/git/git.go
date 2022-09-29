@@ -22,7 +22,15 @@ func WhoAmI(c *gitlab.Client) (*gitlab.User, error) {
 // FindAllRepositories returns all repositories that the user has access to,
 // up to the given maximum number of pages.
 // See also pagination example https://github.com/xanzy/go-gitlab/blob/master/examples/pagination.go
-func FindAllRepositories(c *gitlab.Client, maxPages int) ([]*gitlab.Project, error) {
+func FindAllRepositories(c *gitlab.Client, maxPages int, groups []string) ([]*gitlab.Project, error) {
+	if len(groups) > 0 {
+		return findAllProjectsForGroups(c, maxPages, groups)
+	} else {
+		return findAllProjects(c, maxPages)
+	}
+}
+
+func findAllProjects(c *gitlab.Client, maxPages int) ([]*gitlab.Project, error) {
 	options := &gitlab.ListProjectsOptions{
 		ListOptions: gitlab.ListOptions{
 			Page:    1,
@@ -33,8 +41,10 @@ func FindAllRepositories(c *gitlab.Client, maxPages int) ([]*gitlab.Project, err
 		//Sort:     gitlab.SortAsc
 	}
 
-	var totalProjects []*gitlab.Project
-	var err error
+	var (
+		totalProjects []*gitlab.Project
+		err           error
+	)
 
 	for {
 		projects, response, err := c.Projects.ListProjects(options)
@@ -59,4 +69,52 @@ func FindAllRepositories(c *gitlab.Client, maxPages int) ([]*gitlab.Project, err
 	}
 
 	return totalProjects, err
+}
+
+func findAllProjectsForGroups(c *gitlab.Client, maxPages int, groups []string) ([]*gitlab.Project, error) {
+	options := &gitlab.ListGroupProjectsOptions{
+		IncludeSubGroups: gitlab.Bool(true),
+		ListOptions: gitlab.ListOptions{
+			Page:    1,
+			PerPage: 100,
+		},
+	}
+
+	var (
+		projects []*gitlab.Project
+		err      error
+	)
+
+	for _, groupId := range groups {
+		log.Printf("- Fetching projects for group %s", groupId)
+		var groupProjects []*gitlab.Project
+
+		for {
+			tempGroupProjects, response, err := c.Groups.ListGroupProjects(groupId, options)
+
+			if err != nil {
+				return nil, err
+			}
+
+			if len(tempGroupProjects) == 0 {
+				break
+			}
+
+			log.Printf("Page %d of %d (but max %d)", response.CurrentPage, response.TotalPages, maxPages)
+
+			groupProjects = append(groupProjects, tempGroupProjects...)
+			options.Page = response.NextPage
+
+			if response.CurrentPage == maxPages {
+				break
+			} else if response.NextPage == 0 {
+				break
+			}
+		}
+
+		log.Printf("Found %d projects for group %s", len(groupProjects), groupId)
+		projects = append(projects, groupProjects...)
+	}
+
+	return projects, err
 }
