@@ -63,6 +63,6 @@ func main() {
 
 	log.Printf("Total: Found %d repositories", len(repos))
 
-	htmlContent := bookmarks.CreateBookmarkHtml(repos)
+	htmlContent := bookmarks.CreateBookmarkHTML(repos)
 	bookmarks.WriteBookmarkFile("bookmarks.html", htmlContent)
 }
