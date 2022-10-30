@@ -23,6 +23,12 @@ Usage of ./gitlab-bookmarks:
         a token with API read permissions, not required, but only public repos without
 ```
 
+Example usage:
+
+```
+./gitlab-bookmarks -baseurl https://mycompany.gitlab.com -group some-group -group another-group -maxpages 100
+```
+
 ## Install
 
 Either download a prebuilt binary from
