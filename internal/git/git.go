@@ -25,9 +25,8 @@ func WhoAmI(c *gitlab.Client) (*gitlab.User, error) {
 func FindAllRepositories(c *gitlab.Client, maxPages int, groups []string) ([]*gitlab.Project, error) {
 	if len(groups) > 0 {
 		return findAllProjectsForGroups(c, maxPages, groups)
-	} else {
-		return findAllProjects(c, maxPages)
 	}
+	return findAllProjects(c, maxPages)
 }
 
 func findAllProjects(c *gitlab.Client, maxPages int) ([]*gitlab.Project, error) {
@@ -85,12 +84,12 @@ func findAllProjectsForGroups(c *gitlab.Client, maxPages int, groups []string) (
 		err      error
 	)
 
-	for _, groupId := range groups {
-		log.Printf("- Fetching projects for group %s", groupId)
+	for _, groupID := range groups {
+		log.Printf("- Fetching projects for group %s", groupID)
 		var groupProjects []*gitlab.Project
 
 		for {
-			tempGroupProjects, response, err := c.Groups.ListGroupProjects(groupId, options)
+			tempGroupProjects, response, err := c.Groups.ListGroupProjects(groupID, options)
 
 			if err != nil {
 				return nil, err
@@ -112,7 +111,7 @@ func findAllProjectsForGroups(c *gitlab.Client, maxPages int, groups []string) (
 			}
 		}
 
-		log.Printf("Found %d projects for group %s", len(groupProjects), groupId)
+		log.Printf("Found %d projects for group %s", len(groupProjects), groupID)
 		projects = append(projects, groupProjects...)
 	}
 

@@ -17,8 +17,8 @@ var bookmarksTmpl embed.FS
 // Credit: https://betterprogramming.pub/how-to-generate-html-with-golang-templates-5fad0d91252
 // and https://pkg.go.dev/html/template
 
-// CreateBookmarkHtml creates a bookmark content for the given repositories.
-func CreateBookmarkHtml(projects []*gitlab.Project) string {
+// CreateBookmarkHTML creates a bookmark content for the given repositories.
+func CreateBookmarkHTML(projects []*gitlab.Project) string {
 	templates := template.Must(template.New("").ParseFS(bookmarksTmpl, "bookmarks.tmpl"))
 
 	var processed bytes.Buffer
@@ -31,6 +31,7 @@ func CreateBookmarkHtml(projects []*gitlab.Project) string {
 	return processed.String()
 }
 
+// WriteBookmarkFile simply writes 'filename' to disk with content 'htmlContent'
 func WriteBookmarkFile(filename string, htmlContent string) {
 	outputPath := "./" + filename
 	f, _ := os.Create(outputPath)
