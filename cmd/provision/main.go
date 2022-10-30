@@ -49,14 +49,14 @@ func main() {
 		log.Fatalf("Error creating GitLab client: %s", err)
 	}
 
-	user, err := git.WhoAmI(&client)
+	user, err := git.WhoAmI(client)
 	if err != nil {
 		log.Printf("You are not logged in to GitLab, only public repositories will be fetched")
 	} else {
 		log.Printf("You are using token of the user: %s", user.Username)
 	}
 
-	repos, err := git.FindAllRepositories(&client, *maxpages, groups)
+	repos, err := git.FindAllRepositories(client, *maxpages, groups)
 	if err != nil {
 		log.Fatalf("Error fetching repositories: %s", err)
 	}
