@@ -1,4 +1,4 @@
-# gitlab-bookmarks
+# gitlab-bookmarkss
 
 Tool to fetch projects from GitLab to provision your bookmarks.
 
