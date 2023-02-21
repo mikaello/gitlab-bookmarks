@@ -2,7 +2,7 @@ module github.io/gitlab-bookmarks
 
 go 1.19
 
-require github.com/xanzy/go-gitlab v0.79.1
+require github.com/xanzy/go-gitlab v0.80.2
 
 require (
 	github.com/golang/protobuf v1.5.2 // indirect
