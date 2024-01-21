@@ -35,7 +35,7 @@ func findAllProjects(c *gitlab.Client, maxPages int) ([]*gitlab.Project, error) 
 			Page:    1,
 			PerPage: 100,
 		},
-		//Archived: gitlab.Bool(true),
+		//Archived: gitlab.Ptr(true),
 		//OrderBy:  gitlab.OrderByID,
 		//Sort:     gitlab.SortAsc
 	}
@@ -72,7 +72,7 @@ func findAllProjects(c *gitlab.Client, maxPages int) ([]*gitlab.Project, error) 
 
 func findAllProjectsForGroups(c *gitlab.Client, maxPages int, groups []string) ([]*gitlab.Project, error) {
 	options := &gitlab.ListGroupProjectsOptions{
-		IncludeSubGroups: gitlab.Bool(true),
+		IncludeSubGroups: gitlab.Ptr(true),
 		ListOptions: gitlab.ListOptions{
 			Page:    1,
 			PerPage: 100,
