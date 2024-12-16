@@ -2,10 +2,7 @@ module github.io/gitlab-bookmarks
 
 go 1.23.4
 
-require (
-	github.com/xanzy/go-gitlab v0.107.0
-	gitlab.com/gitlab-org/api/client-go v0.117.0
-)
+require gitlab.com/gitlab-org/api/client-go v0.117.0
 
 require (
 	github.com/golang/protobuf v1.5.4 // indirect
