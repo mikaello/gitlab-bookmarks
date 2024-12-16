@@ -11,10 +11,11 @@ import (
 )
 
 var (
-	token    *string
-	baseurl  *string
-	maxpages *int
-	groups   groupFlags
+	token        *string
+	baseurl      *string
+	maxPages     *int
+	includeForks *bool
+	groups       groupFlags
 )
 
 type groupFlags []string
@@ -31,7 +32,8 @@ func (i *groupFlags) Set(group string) error {
 func init() {
 	token = flag.String("token", "", "a token with API read permissions, not required, but only public repos without")
 	baseurl = flag.String("baseurl", "https://gitlab.com", "the base url of your GitLab instance, including protocol scheme")
-	maxpages = flag.Int("maxpages", 5, "the maximum number of pages to fetch, GitLab API is paginated")
+	maxPages = flag.Int("maxpages", 5, "the maximum number of pages to fetch, GitLab API is paginated")
+	includeForks = flag.Bool("includeforks", false, "if forks should be included")
 	flag.Var(&groups, "group", "group to search for projects (use multiple flags for more groups), if not set all groups will be searched")
 }
 
@@ -56,7 +58,7 @@ func main() {
 		log.Printf("You are using token of the user: %s", user.Username)
 	}
 
-	repos, err := git.FindAllRepositories(client, *maxpages, groups)
+	repos, err := git.FindAllRepositories(client, *maxPages, groups, *includeForks)
 	if err != nil {
 		log.Fatalf("Error fetching repositories: %s", err)
 	}

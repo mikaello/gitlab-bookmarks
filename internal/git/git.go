@@ -22,14 +22,15 @@ func WhoAmI(c *gitlab.Client) (*gitlab.User, error) {
 // FindAllRepositories returns all repositories that the user has access to,
 // up to the given maximum number of pages.
 // See also pagination example https://github.com/xanzy/go-gitlab/blob/master/examples/pagination.go
-func FindAllRepositories(c *gitlab.Client, maxPages int, groups []string) ([]*gitlab.Project, error) {
+func FindAllRepositories(c *gitlab.Client, maxPages int, groups []string, includeForks bool) ([]*gitlab.Project, error) {
 	if len(groups) > 0 {
-		return findAllProjectsForGroups(c, maxPages, groups)
+		return findAllProjectsForGroups(c, maxPages, groups, includeForks)
 	}
-	return findAllProjects(c, maxPages)
+	return findAllProjects(c, maxPages, includeForks)
 }
 
-func findAllProjects(c *gitlab.Client, maxPages int) ([]*gitlab.Project, error) {
+func findAllProjects(c *gitlab.Client, maxPages int, includeForks bool) ([]*gitlab.Project, error) {
+	// exclude forks if includeForks is false
 	options := &gitlab.ListProjectsOptions{
 		ListOptions: gitlab.ListOptions{
 			Page:    1,
@@ -67,10 +68,14 @@ func findAllProjects(c *gitlab.Client, maxPages int) ([]*gitlab.Project, error) 
 		}
 	}
 
+	if !includeForks {
+		totalProjects = excludeForks(totalProjects)
+	}
+
 	return totalProjects, err
 }
 
-func findAllProjectsForGroups(c *gitlab.Client, maxPages int, groups []string) ([]*gitlab.Project, error) {
+func findAllProjectsForGroups(c *gitlab.Client, maxPages int, groups []string, includeForks bool) ([]*gitlab.Project, error) {
 	options := &gitlab.ListGroupProjectsOptions{
 		IncludeSubGroups: gitlab.Ptr(true),
 		ListOptions: gitlab.ListOptions{
@@ -115,5 +120,19 @@ func findAllProjectsForGroups(c *gitlab.Client, maxPages int, groups []string) (
 		projects = append(projects, groupProjects...)
 	}
 
+	if !includeForks {
+		projects = excludeForks(projects)
+	}
+
 	return projects, err
+}
+
+func excludeForks(projects []*gitlab.Project) []*gitlab.Project {
+	var nonForks []*gitlab.Project
+	for _, project := range projects {
+		if project.ForkedFromProject == nil {
+			nonForks = append(nonForks, project)
+		}
+	}
+	return nonForks
 }
