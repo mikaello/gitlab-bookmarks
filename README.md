@@ -17,6 +17,8 @@ Usage of ./gitlab-bookmarks:
         the base url of your GitLab instance, including protocol scheme (default "https://gitlab.com")
   -group value
         group to search for projects (use multiple flags for more groups), if not set all groups will be searched
+  -includeforks
+        if forks should be included (default is false)
   -maxpages int
         the maximum number of pages to fetch, GitLab API is paginated (default 5, 100 per page)
   -token string

@@ -33,7 +33,7 @@ func init() {
 	token = flag.String("token", "", "a token with API read permissions, not required, but only public repos without")
 	baseurl = flag.String("baseurl", "https://gitlab.com", "the base url of your GitLab instance, including protocol scheme")
 	maxPages = flag.Int("maxpages", 5, "the maximum number of pages to fetch, GitLab API is paginated")
-	includeForks = flag.Bool("includeforks", false, "if forks should be included")
+	includeForks = flag.Bool("includeforks", false, "if forks should be included (default is false)")
 	flag.Var(&groups, "group", "group to search for projects (use multiple flags for more groups), if not set all groups will be searched")
 }
 
