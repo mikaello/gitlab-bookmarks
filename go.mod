@@ -3,7 +3,7 @@ module github.io/gitlab-bookmarks
 go 1.23.4
 
 require (
-	github.com/xanzy/go-gitlab v0.107.0
+	github.com/xanzy/go-gitlab v0.115.0
 	gitlab.com/gitlab-org/api/client-go v0.117.0
 )
 
