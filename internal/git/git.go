@@ -3,7 +3,7 @@ package git
 import (
 	"log"
 
-	"github.com/xanzy/go-gitlab"
+	gitlab "gitlab.com/gitlab-org/api/client-go"
 )
 
 // Client creates a GitLab client for the given base URL and token.
