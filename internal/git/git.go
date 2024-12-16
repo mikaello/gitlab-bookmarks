@@ -134,5 +134,6 @@ func excludeForks(projects []*gitlab.Project) []*gitlab.Project {
 			nonForks = append(nonForks, project)
 		}
 	}
+	log.Printf("Excluded %d forked projects", len(projects)-len(nonForks))
 	return nonForks
 }
