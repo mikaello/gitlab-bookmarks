@@ -27,7 +27,7 @@ jobs:
     - uses: dominikh/staticcheck-action@v1.3.1
       with:
         # renovate: datasource=go depName=honnef.co/go/tools/cmd/staticcheck
-        version: "v0.6.0"
+        version: "v0.6.1"
 
     - name: Install golint
       run: go install golang.org/x/lint/golint@latest
