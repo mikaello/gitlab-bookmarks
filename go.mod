@@ -2,7 +2,7 @@ module github.io/gitlab-bookmarks
 
 go 1.23.4
 
-require gitlab.com/gitlab-org/api/client-go v0.148.1
+require gitlab.com/gitlab-org/api/client-go v0.151.0
 
 require (
 	github.com/golang/protobuf v1.5.4 // indirect
@@ -13,7 +13,7 @@ require (
 	golang.org/x/oauth2 v0.30.0 // indirect
 	golang.org/x/time v0.12.0 // indirect
 	google.golang.org/appengine v1.6.8 // indirect
-	google.golang.org/protobuf v1.36.9 // indirect
+	google.golang.org/protobuf v1.36.10 // indirect
 )
 
 replace github.io/gitlab-bookmarks/internal/git => ./internal/git
