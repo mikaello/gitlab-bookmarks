@@ -24,7 +24,7 @@ jobs:
     - name: Run go vet
       run: go vet ./...
 
-    - uses: dominikh/staticcheck-action@v1.4.0
+    - uses: dominikh/staticcheck-action@v1.4.1
       with:
         # renovate: datasource=go depName=honnef.co/go/tools/cmd/staticcheck
         version: "v0.7.0"
