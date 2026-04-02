@@ -8,7 +8,7 @@ import (
 	"log"
 	"os"
 
-	"gitlab.com/gitlab-org/api/client-go"
+	"gitlab.com/gitlab-org/api/client-go/v2"
 )
 
 //go:embed bookmarks.tmpl

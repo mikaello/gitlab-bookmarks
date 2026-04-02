@@ -3,7 +3,7 @@ package git
 import (
 	"log"
 
-	gitlab "gitlab.com/gitlab-org/api/client-go"
+	gitlab "gitlab.com/gitlab-org/api/client-go/v2"
 )
 
 // Client creates a GitLab client for the given base URL and token.
@@ -61,7 +61,7 @@ func findAllProjects(c *gitlab.Client, maxPages int, includeForks bool) ([]*gitl
 		totalProjects = append(totalProjects, projects...)
 		options.Page = response.NextPage
 
-		if response.CurrentPage == maxPages {
+		if maxPages > 0 && response.CurrentPage >= int64(maxPages) {
 			break
 		} else if response.NextPage == 0 {
 			break
@@ -109,7 +109,7 @@ func findAllProjectsForGroups(c *gitlab.Client, maxPages int, groups []string, i
 			groupProjects = append(groupProjects, tempGroupProjects...)
 			options.Page = response.NextPage
 
-			if response.CurrentPage == maxPages {
+			if maxPages > 0 && response.CurrentPage >= int64(maxPages) {
 				break
 			} else if response.NextPage == 0 {
 				break
