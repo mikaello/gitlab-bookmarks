@@ -1,11 +1,10 @@
 package bookmarks
 
 import (
-	"bufio"
 	"bytes"
 	"embed"
+	"fmt"
 	"html/template"
-	"log"
 	"os"
 
 	"gitlab.com/gitlab-org/api/client-go/v2"
@@ -18,23 +17,21 @@ var bookmarksTmpl embed.FS
 // and https://pkg.go.dev/html/template
 
 // CreateBookmarkHTML creates a bookmark content for the given repositories.
-func CreateBookmarkHTML(projects []*gitlab.Project) string {
+func CreateBookmarkHTML(projects []*gitlab.Project) (string, error) {
 	templates := template.Must(template.New("").ParseFS(bookmarksTmpl, "bookmarks.tmpl"))
 
 	var processed bytes.Buffer
-	err := templates.ExecuteTemplate(&processed, "bookmarks", projects)
-
-	if err != nil {
-		log.Fatalf("Could not execute bookmarks template: %s", err)
+	if err := templates.ExecuteTemplate(&processed, "bookmarks", projects); err != nil {
+		return "", fmt.Errorf("execute bookmarks template: %w", err)
 	}
 
-	return processed.String()
+	return processed.String(), nil
 }
 
-// WriteBookmarkFile simply writes 'filename' to disk with content 'htmlContent'
-func WriteBookmarkFile(filename string, htmlContent string) {
-	f, _ := os.Create(filename)
-	w := bufio.NewWriter(f)
-	w.WriteString(htmlContent)
-	w.Flush()
+// WriteBookmarkFile writes 'filename' to disk with content 'htmlContent'.
+func WriteBookmarkFile(filename string, htmlContent string) error {
+	if err := os.WriteFile(filename, []byte(htmlContent), 0o644); err != nil {
+		return fmt.Errorf("write %s: %w", filename, err)
+	}
+	return nil
 }

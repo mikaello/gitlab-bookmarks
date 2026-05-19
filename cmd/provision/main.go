@@ -81,7 +81,7 @@ func main() {
 	}
 
 	// create a GitLab client
-	client, err := git.Client(baseurl, *token)
+	client, err := git.Client(*baseurl, *token)
 	if err != nil {
 		log.Fatalf("Error creating GitLab client: %s", err)
 	}
@@ -100,6 +100,11 @@ func main() {
 
 	log.Printf("Total: Found %d repositories", len(repos))
 
-	htmlContent := bookmarks.CreateBookmarkHTML(repos)
-	bookmarks.WriteBookmarkFile(*output, htmlContent)
+	htmlContent, err := bookmarks.CreateBookmarkHTML(repos)
+	if err != nil {
+		log.Fatalf("Error creating bookmark HTML: %s", err)
+	}
+	if err := bookmarks.WriteBookmarkFile(*output, htmlContent); err != nil {
+		log.Fatalf("Error writing bookmark file: %s", err)
+	}
 }

@@ -12,7 +12,3 @@ require (
 	golang.org/x/oauth2 v0.36.0 // indirect
 	golang.org/x/time v0.14.0 // indirect
 )
-
-replace github.io/gitlab-bookmarks/internal/git => ./internal/git
-
-replace github.io/gitlab-bookmarks/internal/bookmarks => ./internal/bookmarks
