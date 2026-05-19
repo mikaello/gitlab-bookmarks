@@ -7,10 +7,8 @@ import (
 )
 
 // Client creates a GitLab client for the given base URL and token.
-func Client(baseurl *string, token string) (*gitlab.Client, error) {
-	url := *baseurl
-	c, err := gitlab.NewClient(token, gitlab.WithBaseURL(url+"/api/v4"))
-	return c, err
+func Client(baseurl string, token string) (*gitlab.Client, error) {
+	return gitlab.NewClient(token, gitlab.WithBaseURL(baseurl+"/api/v4"))
 }
 
 // WhoAmI returns the user that is logged in to GitLab.
