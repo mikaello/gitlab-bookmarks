@@ -6,6 +6,8 @@ import (
 	gitlab "gitlab.com/gitlab-org/api/client-go/v2"
 )
 
+const perPage = 100
+
 // Client creates a GitLab client for the given base URL and token.
 func Client(baseurl *string, token string) (*gitlab.Client, error) {
 	url := *baseurl
@@ -29,102 +31,78 @@ func FindAllRepositories(c *gitlab.Client, maxPages int, groups []string, includ
 	return findAllProjects(c, maxPages, includeForks)
 }
 
-func findAllProjects(c *gitlab.Client, maxPages int, includeForks bool) ([]*gitlab.Project, error) {
-	// exclude forks if includeForks is false
-	options := &gitlab.ListProjectsOptions{
-		ListOptions: gitlab.ListOptions{
-			Page:    1,
-			PerPage: 100,
-		},
-		//Archived: gitlab.Ptr(true),
-		//OrderBy:  gitlab.OrderByID,
-		//Sort:     gitlab.SortAsc
-	}
+// pageFetcher returns the projects for a single page along with the response
+// metadata used to drive pagination.
+type pageFetcher func(page int64) ([]*gitlab.Project, *gitlab.Response, error)
 
-	var (
-		totalProjects []*gitlab.Project
-		err           error
-	)
-
+// paginate walks pages of projects via fetch, stopping when the API runs out
+// of pages or maxPages is reached (maxPages <= 0 means no cap).
+func paginate(maxPages int, fetch pageFetcher) ([]*gitlab.Project, error) {
+	var all []*gitlab.Project
+	var page int64 = 1
 	for {
-		projects, response, err := c.Projects.ListProjects(options)
+		projects, response, err := fetch(page)
 		if err != nil {
 			return nil, err
 		}
-
 		if len(projects) == 0 {
 			break
 		}
 
 		log.Printf("Page %d of %d (but max %d)", response.CurrentPage, response.TotalPages, maxPages)
-
-		totalProjects = append(totalProjects, projects...)
-		options.Page = response.NextPage
+		all = append(all, projects...)
 
 		if maxPages > 0 && response.CurrentPage >= int64(maxPages) {
 			break
-		} else if response.NextPage == 0 {
+		}
+		if response.NextPage == 0 {
 			break
 		}
+		page = response.NextPage
 	}
-
-	if !includeForks {
-		totalProjects = excludeForks(totalProjects)
-	}
-
-	return totalProjects, err
+	return all, nil
 }
 
-func findAllProjectsForGroups(c *gitlab.Client, maxPages int, groups []string, includeForks bool) ([]*gitlab.Project, error) {
-	options := &gitlab.ListGroupProjectsOptions{
-		IncludeSubGroups: gitlab.Ptr(true),
-		ListOptions: gitlab.ListOptions{
-			Page:    1,
-			PerPage: 100,
-		},
-	}
-
-	var (
-		projects []*gitlab.Project
-		err      error
-	)
-
-	for _, groupID := range groups {
-		log.Printf("- Fetching projects for group %s", groupID)
-		var groupProjects []*gitlab.Project
-
-		for {
-			tempGroupProjects, response, err := c.Groups.ListGroupProjects(groupID, options)
-
-			if err != nil {
-				return nil, err
-			}
-
-			if len(tempGroupProjects) == 0 {
-				break
-			}
-
-			log.Printf("Page %d of %d (but max %d)", response.CurrentPage, response.TotalPages, maxPages)
-
-			groupProjects = append(groupProjects, tempGroupProjects...)
-			options.Page = response.NextPage
-
-			if maxPages > 0 && response.CurrentPage >= int64(maxPages) {
-				break
-			} else if response.NextPage == 0 {
-				break
-			}
-		}
-
-		log.Printf("Found %d projects for group %s", len(groupProjects), groupID)
-		projects = append(projects, groupProjects...)
+func findAllProjects(c *gitlab.Client, maxPages int, includeForks bool) ([]*gitlab.Project, error) {
+	projects, err := paginate(maxPages, func(page int64) ([]*gitlab.Project, *gitlab.Response, error) {
+		return c.Projects.ListProjects(&gitlab.ListProjectsOptions{
+			ListOptions: gitlab.ListOptions{Page: page, PerPage: perPage},
+		})
+	})
+	if err != nil {
+		return nil, err
 	}
 
 	if !includeForks {
 		projects = excludeForks(projects)
 	}
+	return projects, nil
+}
 
-	return projects, err
+func findAllProjectsForGroups(c *gitlab.Client, maxPages int, groups []string, includeForks bool) ([]*gitlab.Project, error) {
+	var all []*gitlab.Project
+
+	for _, groupID := range groups {
+		log.Printf("- Fetching projects for group %s", groupID)
+
+		groupProjects, err := paginate(maxPages, func(page int64) ([]*gitlab.Project, *gitlab.Response, error) {
+			return c.Groups.ListGroupProjects(groupID, &gitlab.ListGroupProjectsOptions{
+				IncludeSubGroups: gitlab.Ptr(true),
+				ListOptions:      gitlab.ListOptions{Page: page, PerPage: perPage},
+			})
+		})
+		if err != nil {
+			return nil, err
+		}
+
+		log.Printf("Found %d projects for group %s", len(groupProjects), groupID)
+		all = append(all, groupProjects...)
+	}
+
+	if !includeForks {
+		all = excludeForks(all)
+	}
+	return all, nil
 }
 
 func excludeForks(projects []*gitlab.Project) []*gitlab.Project {
