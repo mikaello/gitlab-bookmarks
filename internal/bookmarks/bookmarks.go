@@ -33,8 +33,7 @@ func CreateBookmarkHTML(projects []*gitlab.Project) string {
 
 // WriteBookmarkFile simply writes 'filename' to disk with content 'htmlContent'
 func WriteBookmarkFile(filename string, htmlContent string) {
-	outputPath := "./" + filename
-	f, _ := os.Create(outputPath)
+	f, _ := os.Create(filename)
 	w := bufio.NewWriter(f)
 	w.WriteString(htmlContent)
 	w.Flush()
