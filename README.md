@@ -28,8 +28,12 @@ Usage of ./gitlab-bookmarks:
         if forks should be included (default is false)
   -maxpages int
         the maximum number of pages to fetch, GitLab API is paginated (default 5, 100 per page)
+  -output string
+        path to the bookmarks file to write (default "bookmarks.html")
   -token string
         a token with API read permissions; without it only public repositories will be fetched
+  -version
+        print version information and exit
 ```
 
 Example usage:
