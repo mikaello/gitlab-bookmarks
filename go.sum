@@ -33,6 +33,8 @@ gitlab.com/gitlab-org/api/client-go/v2 v2.32.0 h1:oG173HQA/FJjjoRj0H/xf6KmgNdKxL
 gitlab.com/gitlab-org/api/client-go/v2 v2.32.0/go.mod h1:0upZTKi9YMMvhavTlKJ3YgQUZE/GJkcLmXT/+6knTXU=
 gitlab.com/gitlab-org/api/client-go/v2 v2.36.0 h1:SnvcRXClshJeyoR0WAgpAGiyEmxgRmXrGvvQOCWFdoU=
 gitlab.com/gitlab-org/api/client-go/v2 v2.36.0/go.mod h1:T+hA9p13Fxyh4FkVbcEy36HlAGs37QBCifhh7Zt4+dg=
+gitlab.com/gitlab-org/api/client-go/v2 v2.39.0 h1:avIIRj2sia1bGYCXy6nIeuBFWNzwQppZf+eGjVMNh7E=
+gitlab.com/gitlab-org/api/client-go/v2 v2.39.0/go.mod h1:SKUbKSS59KPt6WeGNJoYF8HDaf/rFMUSITlftj/HkLg=
 golang.org/x/oauth2 v0.34.0 h1:hqK/t4AKgbqWkdkcAeI8XLmbK+4m4G5YeQRrmiotGlw=
 golang.org/x/oauth2 v0.34.0/go.mod h1:lzm5WQJQwKZ3nwavOZ3IS5Aulzxi68dUSgRHujetwEA=
 golang.org/x/oauth2 v0.36.0 h1:peZ/1z27fi9hUOFCAZaHyrpWG5lwe0RJEEEeH0ThlIs=
@@ -41,5 +43,7 @@ golang.org/x/sys v0.39.0 h1:CvCKL8MeisomCi6qNZ+wbb0DN9E5AATixKsvNtMoMFk=
 golang.org/x/sys v0.39.0/go.mod h1:OgkHotnGiDImocRcuBABYBEXf8A9a87e/uXjp9XT3ks=
 golang.org/x/time v0.14.0 h1:MRx4UaLrDotUKUdCIqzPC48t1Y9hANFKIRpNx+Te8PI=
 golang.org/x/time v0.14.0/go.mod h1:eL/Oa2bBBK0TkX57Fyni+NgnyQQN4LitPmob2Hjnqw4=
+golang.org/x/time v0.15.0 h1:bbrp8t3bGUeFOx08pvsMYRTCVSMk89u4tKbNOZbp88U=
+golang.org/x/time v0.15.0/go.mod h1:Y4YMaQmXwGQZoFaVFk4YpCt4FLQMYKZe9oeV/f4MSno=
 gopkg.in/yaml.v3 v3.0.1 h1:fxVm/GzAzEWqLHuvctI91KS9hhNmmWOoWu0XTYJS7CA=
 gopkg.in/yaml.v3 v3.0.1/go.mod h1:K4uyk7z7BCEPqu6E+C64Yfv1cQ7kz7rIZviUmN+EgEM=
