@@ -22,6 +22,8 @@ $ ./gitlab-bookmarks --help
 Usage of ./gitlab-bookmarks:
   -baseurl string
         the base url of your GitLab instance, including protocol scheme (default "https://gitlab.com")
+  -folderby string
+        how to arrange projects in the bookmarks file: flat or namespace (default "flat")
   -group value
         group to search for projects (use multiple flags for more groups), if not set all groups will be searched
   -includeforks
@@ -40,6 +42,12 @@ Example usage:
 
 ```shell
 ./gitlab-bookmarks -baseurl https://mycompany.gitlab.com -group some-group -group another-group -maxpages 100
+```
+
+Group projects into namespace folders:
+
+```shell
+./gitlab-bookmarks -baseurl https://mycompany.gitlab.com -folderby namespace
 ```
 
 ### Creating a token

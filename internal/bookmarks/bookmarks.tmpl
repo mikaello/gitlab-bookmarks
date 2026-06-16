@@ -7,10 +7,16 @@
 <TITLE>Bookmarks</TITLE>
 <H1>Bookmarks</H1>
 <DL><p>
-    <DT><H3 ADD_DATE="1658268705" LAST_MODIFIED="1658268705" PERSONAL_TOOLBAR_FOLDER="false">GitLab projects</H3>
+    <DT><H3 ADD_DATE="{{.Root.AddDate}}" LAST_MODIFIED="{{.Root.AddDate}}" PERSONAL_TOOLBAR_FOLDER="false">{{.Root.Name}}</H3>
     <DL><p>
-{{range $index, $item :=. }}
-        <DT><A HREF="{{$item.WebURL}}" ADD_DATE="{{$item.LastActivityAt.Unix}}">{{$item.Name}}</A>{{end}}
+{{range $index, $folder := .Root.Folders}}
+        <DT><H3 ADD_DATE="{{$folder.AddDate}}" LAST_MODIFIED="{{$folder.AddDate}}">{{$folder.Name}}</H3>
+        <DL><p>
+{{range $projectIndex, $item := $folder.Projects}}
+            <DT><A HREF="{{$item.WebURL}}" ADD_DATE="{{$item.AddDate}}">{{$item.Name}}</A>{{end}}
+        </DL><p>
+{{end}}{{range $index, $item := .Root.Projects}}
+        <DT><A HREF="{{$item.WebURL}}" ADD_DATE="{{$item.AddDate}}">{{$item.Name}}</A>{{end}}
     </DL><p>
 </DL><p>
 {{end}}
