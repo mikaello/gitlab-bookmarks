@@ -9,8 +9,8 @@ import (
 	"runtime/debug"
 	"strings"
 
-	"github.io/gitlab-bookmarks/internal/bookmarks"
-	"github.io/gitlab-bookmarks/internal/git"
+	"github.com/mikaello/gitlab-bookmarks/internal/bookmarks"
+	"github.com/mikaello/gitlab-bookmarks/internal/git"
 )
 
 var (

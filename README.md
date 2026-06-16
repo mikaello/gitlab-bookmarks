@@ -62,7 +62,7 @@ Either download a prebuilt binary from
 exists for your system), or build with go:
 
 ```shell
-go build -o gitlab-bookmarks cmd/provision/main.go
+go build -o gitlab-bookmarks ./cmd/gitlab-bookmarks
 ```
 
 ## Development
@@ -70,11 +70,11 @@ go build -o gitlab-bookmarks cmd/provision/main.go
 Compile and run by running:
 
 ```shell
-go run cmd/provision/main.go
+go run ./cmd/gitlab-bookmarks
 ```
 
 With params:
 
 ```shell
-go run cmd/provision/main.go -baseurl https://your-gitlab.com
+go run ./cmd/gitlab-bookmarks -baseurl https://your-gitlab.com
 ```

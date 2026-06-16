@@ -1,4 +1,4 @@
-module github.io/gitlab-bookmarks
+module github.com/mikaello/gitlab-bookmarks
 
 go 1.25.0
 

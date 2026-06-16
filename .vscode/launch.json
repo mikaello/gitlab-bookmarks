@@ -9,7 +9,7 @@
       "type": "go",
       "request": "launch",
       "mode": "auto",
-      "program": "${workspaceFolder}/cmd/provision/main.go",
+      "program": "${workspaceFolder}/cmd/gitlab-bookmarks/main.go",
       "args": ["-baseurl=https://gitlab.com", "-maxpages=3"]
     }
   ]

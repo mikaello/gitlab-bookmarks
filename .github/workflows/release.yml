@@ -23,5 +23,5 @@ jobs:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           goos: ${{ matrix.goos }}
           goarch: ${{ matrix.goarch }}
-          project_path: cmd/provision/
+          project_path: cmd/gitlab-bookmarks/
           ldflags: -s -w -X main.version=${{ github.ref_name }}
