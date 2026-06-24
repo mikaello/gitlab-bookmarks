@@ -22,6 +22,8 @@ $ ./gitlab-bookmarks --help
 Usage of ./gitlab-bookmarks:
   -baseurl string
         the base url of your GitLab instance, including protocol scheme (default "https://gitlab.com")
+  -folderby string
+        how to arrange projects in the bookmarks file: flat or namespace (default "flat")
   -group value
         group to search for projects (use multiple flags for more groups), if not set all groups will be searched
   -includeforks
@@ -40,6 +42,12 @@ Example usage:
 
 ```shell
 ./gitlab-bookmarks -baseurl https://mycompany.gitlab.com -group some-group -group another-group -maxpages 100
+```
+
+Group projects into namespace folders:
+
+```shell
+./gitlab-bookmarks -baseurl https://mycompany.gitlab.com -folderby namespace
 ```
 
 ### Creating a token
@@ -62,7 +70,7 @@ Either download a prebuilt binary from
 exists for your system), or build with go:
 
 ```shell
-go build -o gitlab-bookmarks cmd/provision/main.go
+go build -o gitlab-bookmarks ./cmd/gitlab-bookmarks
 ```
 
 ## Development
@@ -70,11 +78,11 @@ go build -o gitlab-bookmarks cmd/provision/main.go
 Compile and run by running:
 
 ```shell
-go run cmd/provision/main.go
+go run ./cmd/gitlab-bookmarks
 ```
 
 With params:
 
 ```shell
-go run cmd/provision/main.go -baseurl https://your-gitlab.com
+go run ./cmd/gitlab-bookmarks -baseurl https://your-gitlab.com
 ```

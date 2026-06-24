@@ -9,7 +9,7 @@ import (
 	gitlab "gitlab.com/gitlab-org/api/client-go/v2"
 )
 
-func TestCreateBookmarkHTML(t *testing.T) {
+func TestCreateBookmarkHTMLFlat(t *testing.T) {
 	activity := time.Unix(1700000000, 0)
 	projects := []*gitlab.Project{
 		{
@@ -24,7 +24,7 @@ func TestCreateBookmarkHTML(t *testing.T) {
 		},
 	}
 
-	html, err := CreateBookmarkHTML(projects)
+	html, err := CreateBookmarkHTML(projects, FolderModeFlat)
 	if err != nil {
 		t.Fatalf("CreateBookmarkHTML returned error: %s", err)
 	}
@@ -32,6 +32,7 @@ func TestCreateBookmarkHTML(t *testing.T) {
 	for _, want := range []string{
 		"<!DOCTYPE NETSCAPE-Bookmark-file-1>",
 		"https://gitlab.example.com/group/alpha",
+		"ADD_DATE=\"1700000000\">alpha</A>",
 		">alpha</A>",
 		"https://gitlab.example.com/group/beta",
 		">beta</A>",
@@ -39,6 +40,99 @@ func TestCreateBookmarkHTML(t *testing.T) {
 		if !strings.Contains(html, want) {
 			t.Errorf("expected output to contain %q, got:\n%s", want, html)
 		}
+	}
+}
+
+func TestCreateBookmarkHTMLNamespaceFolders(t *testing.T) {
+	activity := time.Unix(1700000000, 0)
+	projects := []*gitlab.Project{
+		{
+			Name:           "alpha",
+			WebURL:         "https://gitlab.example.com/group/team/alpha",
+			LastActivityAt: &activity,
+			Namespace:      &gitlab.ProjectNamespace{FullPath: "group/team"},
+		},
+		{
+			Name:           "beta",
+			WebURL:         "https://gitlab.example.com/group/platform/beta",
+			LastActivityAt: &activity,
+			Namespace:      &gitlab.ProjectNamespace{FullPath: "group/platform"},
+		},
+		{
+			Name:           "gamma",
+			WebURL:         "https://gitlab.example.com/group/team/gamma",
+			LastActivityAt: &activity,
+			Namespace:      &gitlab.ProjectNamespace{FullPath: "group/team"},
+		},
+	}
+
+	html, err := CreateBookmarkHTML(projects, FolderModeNamespace)
+	if err != nil {
+		t.Fatalf("CreateBookmarkHTML returned error: %s", err)
+	}
+
+	for _, want := range []string{
+		">group/team</H3>",
+		">group/platform</H3>",
+		"https://gitlab.example.com/group/team/alpha",
+		"https://gitlab.example.com/group/team/gamma",
+		"https://gitlab.example.com/group/platform/beta",
+	} {
+		if !strings.Contains(html, want) {
+			t.Errorf("expected output to contain %q, got:\n%s", want, html)
+		}
+	}
+}
+
+func TestBookmarkDataUsesExportDateForFolders(t *testing.T) {
+	const exportDate int64 = 1800000000
+	projects := []*gitlab.Project{
+		{
+			Name:      "alpha",
+			Namespace: &gitlab.ProjectNamespace{FullPath: "group/team"},
+		},
+	}
+
+	data := bookmarkData(projects, FolderModeNamespace, exportDate)
+
+	if data.Root.AddDate != exportDate {
+		t.Errorf("expected root add date %d, got %d", exportDate, data.Root.AddDate)
+	}
+	if len(data.Root.Folders) != 1 {
+		t.Fatalf("expected one namespace folder, got %d", len(data.Root.Folders))
+	}
+	if data.Root.Folders[0].AddDate != exportDate {
+		t.Errorf("expected namespace add date %d, got %d", exportDate, data.Root.Folders[0].AddDate)
+	}
+}
+
+func TestCreateBookmarkHTMLWithoutLastActivityAt(t *testing.T) {
+	projects := []*gitlab.Project{
+		{
+			Name:   "alpha",
+			WebURL: "https://gitlab.example.com/group/alpha",
+		},
+	}
+
+	html, err := CreateBookmarkHTML(projects, FolderModeFlat)
+	if err != nil {
+		t.Fatalf("CreateBookmarkHTML returned error: %s", err)
+	}
+
+	if !strings.Contains(html, "ADD_DATE=\"0\">alpha</A>") {
+		t.Errorf("expected output to use a zero add date for missing activity, got:\n%s", html)
+	}
+}
+
+func TestParseFolderMode(t *testing.T) {
+	for _, value := range []string{"flat", "namespace"} {
+		if _, err := ParseFolderMode(value); err != nil {
+			t.Fatalf("ParseFolderMode(%q) returned error: %s", value, err)
+		}
+	}
+
+	if _, err := ParseFolderMode("group"); err == nil {
+		t.Fatal("expected ParseFolderMode to reject invalid mode")
 	}
 }
 

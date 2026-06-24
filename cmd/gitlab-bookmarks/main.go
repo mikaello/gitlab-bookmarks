@@ -9,8 +9,8 @@ import (
 	"runtime/debug"
 	"strings"
 
-	"github.io/gitlab-bookmarks/internal/bookmarks"
-	"github.io/gitlab-bookmarks/internal/git"
+	"github.com/mikaello/gitlab-bookmarks/internal/bookmarks"
+	"github.com/mikaello/gitlab-bookmarks/internal/git"
 )
 
 var (
@@ -18,6 +18,7 @@ var (
 	baseurl      *string
 	output       *string
 	maxPages     *int
+	folderBy     *string
 	includeForks *bool
 	showVersion  *bool
 	groups       groupFlags
@@ -39,6 +40,7 @@ func init() {
 	baseurl = flag.String("baseurl", "https://gitlab.com", "the base url of your GitLab instance, including protocol scheme")
 	output = flag.String("output", "bookmarks.html", "path to the bookmarks file to write")
 	maxPages = flag.Int("maxpages", 5, "the maximum number of pages to fetch, GitLab API is paginated")
+	folderBy = flag.String("folderby", string(bookmarks.FolderModeFlat), "how to arrange projects in the bookmarks file: flat or namespace")
 	includeForks = flag.Bool("includeforks", false, "if forks should be included (default is false)")
 	showVersion = flag.Bool("version", false, "print version information and exit")
 	flag.Var(&groups, "group", "group to search for projects (use multiple flags for more groups), if not set all groups will be searched")
@@ -79,6 +81,10 @@ func main() {
 	if err != nil {
 		log.Fatalf("baseURL is invalid, '%s': %s", *baseurl, err)
 	}
+	folderMode, err := bookmarks.ParseFolderMode(*folderBy)
+	if err != nil {
+		log.Fatal(err)
+	}
 
 	// create a GitLab client
 	client, err := git.Client(*baseurl, *token)
@@ -100,7 +106,7 @@ func main() {
 
 	log.Printf("Total: Found %d repositories", len(repos))
 
-	htmlContent, err := bookmarks.CreateBookmarkHTML(repos)
+	htmlContent, err := bookmarks.CreateBookmarkHTML(repos, folderMode)
 	if err != nil {
 		log.Fatalf("Error creating bookmark HTML: %s", err)
 	}
