@@ -84,6 +84,28 @@ func TestCreateBookmarkHTMLNamespaceFolders(t *testing.T) {
 	}
 }
 
+func TestBookmarkDataUsesExportDateForFolders(t *testing.T) {
+	const exportDate int64 = 1800000000
+	projects := []*gitlab.Project{
+		{
+			Name:      "alpha",
+			Namespace: &gitlab.ProjectNamespace{FullPath: "group/team"},
+		},
+	}
+
+	data := bookmarkData(projects, FolderModeNamespace, exportDate)
+
+	if data.Root.AddDate != exportDate {
+		t.Errorf("expected root add date %d, got %d", exportDate, data.Root.AddDate)
+	}
+	if len(data.Root.Folders) != 1 {
+		t.Fatalf("expected one namespace folder, got %d", len(data.Root.Folders))
+	}
+	if data.Root.Folders[0].AddDate != exportDate {
+		t.Errorf("expected namespace add date %d, got %d", exportDate, data.Root.Folders[0].AddDate)
+	}
+}
+
 func TestCreateBookmarkHTMLWithoutLastActivityAt(t *testing.T) {
 	projects := []*gitlab.Project{
 		{

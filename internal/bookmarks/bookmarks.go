@@ -7,6 +7,7 @@ import (
 	"html/template"
 	"os"
 	"strings"
+	"time"
 
 	"gitlab.com/gitlab-org/api/client-go/v2"
 )
@@ -56,21 +57,21 @@ func CreateBookmarkHTML(projects []*gitlab.Project, folderMode FolderMode) (stri
 	templates := template.Must(template.New("").ParseFS(bookmarksTmpl, "bookmarks.tmpl"))
 
 	var processed bytes.Buffer
-	if err := templates.ExecuteTemplate(&processed, "bookmarks", bookmarkData(projects, folderMode)); err != nil {
+	if err := templates.ExecuteTemplate(&processed, "bookmarks", bookmarkData(projects, folderMode, time.Now().Unix())); err != nil {
 		return "", fmt.Errorf("execute bookmarks template: %w", err)
 	}
 
 	return processed.String(), nil
 }
 
-func bookmarkData(projects []*gitlab.Project, folderMode FolderMode) bookmarkPage {
+func bookmarkData(projects []*gitlab.Project, folderMode FolderMode, addDate int64) bookmarkPage {
 	root := bookmarkFolder{
 		Name:    rootFolderName,
-		AddDate: 1658268705,
+		AddDate: addDate,
 	}
 
 	if folderMode == FolderModeNamespace {
-		root.Folders = namespaceFolders(projects)
+		root.Folders = namespaceFolders(projects, addDate)
 	} else {
 		root.Projects = bookmarkProjects(projects)
 	}
@@ -78,7 +79,7 @@ func bookmarkData(projects []*gitlab.Project, folderMode FolderMode) bookmarkPag
 	return bookmarkPage{Root: root}
 }
 
-func namespaceFolders(projects []*gitlab.Project) []bookmarkFolder {
+func namespaceFolders(projects []*gitlab.Project, addDate int64) []bookmarkFolder {
 	foldersByName := make(map[string]int)
 	var folders []bookmarkFolder
 
@@ -88,7 +89,7 @@ func namespaceFolders(projects []*gitlab.Project) []bookmarkFolder {
 		if !ok {
 			index = len(folders)
 			foldersByName[name] = index
-			folders = append(folders, bookmarkFolder{Name: name, AddDate: 1658268705})
+			folders = append(folders, bookmarkFolder{Name: name, AddDate: addDate})
 		}
 		folders[index].Projects = append(folders[index].Projects, bookmarkProjectFor(project))
 	}
