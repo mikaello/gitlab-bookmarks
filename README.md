@@ -82,6 +82,21 @@ You can find it with `go env GOBIN`, or use `$(go env GOPATH)/bin` when `GOBIN` 
 
 Prebuilt binaries are also available on the [release page](https://github.com/mikaello/gitlab-bookmarks/releases).
 
+### Docker
+
+Run the latest image and write `bookmarks.html` to the current directory:
+
+```shell
+docker run --rm \
+  --user "$(id -u):$(id -g)" \
+  --volume "$PWD:/output" \
+  ghcr.io/mikaello/gitlab-bookmarks:latest \
+  -group some-group
+```
+
+Add any other options after the image name.
+For example, pass `-token "$GITLAB_TOKEN"` to include private projects.
+
 ## Development
 
 Compile and run by running:
