@@ -65,24 +65,33 @@ After running the tool you will have a `bookmarks.html` in the current directory
 
 ## Install
 
-Either download a prebuilt binary from
-[the release page](https://github.com/mikaello/gitlab-bookmarks/releases) (if it
-exists for your system), or build with go:
+Install the latest release with Go:
 
 ```shell
-go build -o gitlab-bookmarks ./cmd/gitlab-bookmarks
+go install github.com/mikaello/gitlab-bookmarks@latest
 ```
+
+To install a local checkout instead:
+
+```shell
+go install .
+```
+
+Make sure the Go binary directory is on your `PATH`.
+You can find it with `go env GOBIN`, or use `$(go env GOPATH)/bin` when `GOBIN` is empty.
+
+Prebuilt binaries are also available on the [release page](https://github.com/mikaello/gitlab-bookmarks/releases).
 
 ## Development
 
 Compile and run by running:
 
 ```shell
-go run ./cmd/gitlab-bookmarks
+go run .
 ```
 
 With params:
 
 ```shell
-go run ./cmd/gitlab-bookmarks -baseurl https://your-gitlab.com
+go run . -baseurl https://your-gitlab.com
 ```
