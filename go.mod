@@ -2,7 +2,7 @@ module github.com/mikaello/gitlab-bookmarks
 
 go 1.25.0
 
-require gitlab.com/gitlab-org/api/client-go/v2 v2.39.0
+require gitlab.com/gitlab-org/api/client-go/v2 v2.45.0
 
 require (
 	github.com/google/go-cmp v0.7.0 // indirect
