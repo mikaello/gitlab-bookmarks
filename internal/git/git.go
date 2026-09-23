@@ -2,6 +2,8 @@ package git
 
 import (
 	"log"
+	"sort"
+	"strings"
 
 	gitlab "gitlab.com/gitlab-org/api/client-go/v3"
 )
@@ -74,6 +76,8 @@ func findAllProjects(c *gitlab.Client, maxPages int, includeForks bool) ([]*gitl
 	if !includeForks {
 		projects = excludeForks(projects)
 	}
+	projects = deduplicateProjects(projects)
+	sortProjects(projects)
 	return projects, nil
 }
 
@@ -100,6 +104,8 @@ func findAllProjectsForGroups(c *gitlab.Client, maxPages int, groups []string, i
 	if !includeForks {
 		all = excludeForks(all)
 	}
+	all = deduplicateProjects(all)
+	sortProjects(all)
 	return all, nil
 }
 
@@ -112,4 +118,39 @@ func excludeForks(projects []*gitlab.Project) []*gitlab.Project {
 	}
 	log.Printf("Excluded %d forked projects", len(projects)-len(nonForks))
 	return nonForks
+}
+
+func deduplicateProjects(projects []*gitlab.Project) []*gitlab.Project {
+	seen := make(map[int64]struct{}, len(projects))
+	unique := make([]*gitlab.Project, 0, len(projects))
+	for _, project := range projects {
+		if _, ok := seen[project.ID]; ok {
+			continue
+		}
+		seen[project.ID] = struct{}{}
+		unique = append(unique, project)
+	}
+	log.Printf("Excluded %d duplicate projects", len(projects)-len(unique))
+	return unique
+}
+
+func sortProjects(projects []*gitlab.Project) {
+	sort.SliceStable(projects, func(i, j int) bool {
+		left := strings.ToLower(projectSortName(projects[i]))
+		right := strings.ToLower(projectSortName(projects[j]))
+		if left == right {
+			return projects[i].ID < projects[j].ID
+		}
+		return left < right
+	})
+}
+
+func projectSortName(project *gitlab.Project) string {
+	if project.PathWithNamespace != "" {
+		return project.PathWithNamespace
+	}
+	if project.NameWithNamespace != "" {
+		return project.NameWithNamespace
+	}
+	return project.Name
 }
