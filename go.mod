@@ -4,7 +4,7 @@ go 1.26.0
 
 require (
 	gitlab.com/gitlab-org/api/client-go/v2 v2.64.0
-	gitlab.com/gitlab-org/api/client-go/v3 v3.12.0
+	gitlab.com/gitlab-org/api/client-go/v3 v3.13.0
 )
 
 require (
