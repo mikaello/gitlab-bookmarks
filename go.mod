@@ -2,13 +2,9 @@ module github.com/mikaello/gitlab-bookmarks
 
 go 1.26.0
 
-require (
-	gitlab.com/gitlab-org/api/client-go/v2 v2.64.0
-	gitlab.com/gitlab-org/api/client-go/v3 v3.13.0
-)
+require gitlab.com/gitlab-org/api/client-go/v3 v3.13.0
 
 require (
-	github.com/google/go-cmp v0.7.0 // indirect
 	github.com/google/go-querystring v1.2.0 // indirect
 	github.com/hashicorp/go-cleanhttp v0.5.2 // indirect
 	github.com/hashicorp/go-retryablehttp v0.7.8 // indirect
