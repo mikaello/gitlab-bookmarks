@@ -1,6 +1,8 @@
 package bookmarks
 
 import (
+	"bytes"
+	"os"
 	"path/filepath"
 	"strings"
 	"testing"
@@ -139,7 +141,34 @@ func TestParseFolderMode(t *testing.T) {
 func TestWriteBookmarkFile(t *testing.T) {
 	dir := t.TempDir()
 	path := filepath.Join(dir, "bookmarks.html")
+	if err := os.WriteFile(path, []byte("old content"), 0o644); err != nil {
+		t.Fatalf("create existing bookmark file: %s", err)
+	}
 	if err := WriteBookmarkFile(path, "hello"); err != nil {
 		t.Fatalf("WriteBookmarkFile returned error: %s", err)
+	}
+	content, err := os.ReadFile(path)
+	if err != nil {
+		t.Fatalf("read bookmark file: %s", err)
+	}
+	if string(content) != "hello" {
+		t.Errorf("bookmark content = %q, want hello", content)
+	}
+	matches, err := filepath.Glob(filepath.Join(dir, ".bookmarks.html.tmp-*"))
+	if err != nil {
+		t.Fatalf("glob temporary files: %s", err)
+	}
+	if len(matches) != 0 {
+		t.Errorf("temporary files left behind: %v", matches)
+	}
+}
+
+func TestWriteBookmarkFileToStdout(t *testing.T) {
+	var output bytes.Buffer
+	if err := writeBookmarkFile("-", "hello", &output); err != nil {
+		t.Fatalf("writeBookmarkFile returned error: %s", err)
+	}
+	if output.String() != "hello" {
+		t.Errorf("stdout = %q, want hello", output.String())
 	}
 }
