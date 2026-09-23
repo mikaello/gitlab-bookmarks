@@ -5,7 +5,9 @@ import (
 	"embed"
 	"fmt"
 	"html/template"
+	"io"
 	"os"
+	"path/filepath"
 	"strings"
 	"time"
 
@@ -131,10 +133,43 @@ func namespaceName(project *gitlab.Project) string {
 	return "Uncategorized"
 }
 
-// WriteBookmarkFile writes 'filename' to disk with content 'htmlContent'.
+// WriteBookmarkFile writes htmlContent to filename, or to stdout when filename is "-".
 func WriteBookmarkFile(filename string, htmlContent string) error {
-	if err := os.WriteFile(filename, []byte(htmlContent), 0o644); err != nil {
-		return fmt.Errorf("write %s: %w", filename, err)
+	return writeBookmarkFile(filename, htmlContent, os.Stdout)
+}
+
+func writeBookmarkFile(filename string, htmlContent string, stdout io.Writer) error {
+	if filename == "-" {
+		if _, err := io.WriteString(stdout, htmlContent); err != nil {
+			return fmt.Errorf("write stdout: %w", err)
+		}
+		return nil
+	}
+
+	temporary, err := os.CreateTemp(filepath.Dir(filename), "."+filepath.Base(filename)+".tmp-*")
+	if err != nil {
+		return fmt.Errorf("create temporary file for %s: %w", filename, err)
+	}
+	temporaryName := temporary.Name()
+	defer func() {
+		_ = temporary.Close()
+		_ = os.Remove(temporaryName)
+	}()
+
+	if err := temporary.Chmod(0o644); err != nil {
+		return fmt.Errorf("set permissions on temporary file for %s: %w", filename, err)
+	}
+	if _, err := io.WriteString(temporary, htmlContent); err != nil {
+		return fmt.Errorf("write temporary file for %s: %w", filename, err)
+	}
+	if err := temporary.Sync(); err != nil {
+		return fmt.Errorf("sync temporary file for %s: %w", filename, err)
+	}
+	if err := temporary.Close(); err != nil {
+		return fmt.Errorf("close temporary file for %s: %w", filename, err)
+	}
+	if err := os.Rename(temporaryName, filename); err != nil {
+		return fmt.Errorf("replace %s: %w", filename, err)
 	}
 	return nil
 }

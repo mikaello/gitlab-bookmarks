@@ -31,7 +31,7 @@ Usage of ./gitlab-bookmarks:
   -maxpages int
         the maximum number of pages to fetch, GitLab API is paginated (default 5, 100 per page)
   -output string
-        path to the bookmarks file to write (default "bookmarks.html")
+        path to the bookmarks file to write, or - for stdout (default "bookmarks.html")
   -token string
         a token with API read permissions; defaults to GITLAB_TOKEN; without either only public repositories will be fetched
   -version
@@ -48,6 +48,12 @@ Group projects into namespace folders:
 
 ```shell
 ./gitlab-bookmarks -baseurl https://mycompany.gitlab.com -folderby namespace
+```
+
+Write the generated bookmark HTML to standard output:
+
+```shell
+./gitlab-bookmarks -output - > bookmarks.html
 ```
 
 ### Creating a token

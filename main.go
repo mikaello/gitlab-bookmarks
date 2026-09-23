@@ -38,7 +38,7 @@ func (i *groupFlags) Set(group string) error {
 func init() {
 	token = flag.String("token", "", "a token with API read permissions; defaults to GITLAB_TOKEN; without either only public repositories will be fetched")
 	baseurl = flag.String("baseurl", "https://gitlab.com", "the base url of your GitLab instance, including protocol scheme")
-	output = flag.String("output", "bookmarks.html", "path to the bookmarks file to write")
+	output = flag.String("output", "bookmarks.html", "path to the bookmarks file to write, or - for stdout")
 	maxPages = flag.Int("maxpages", 5, "the maximum number of pages to fetch, GitLab API is paginated")
 	folderBy = flag.String("folderby", string(bookmarks.FolderModeFlat), "how to arrange projects in the bookmarks file: flat or namespace")
 	includeForks = flag.Bool("includeforks", false, "if forks should be included (default is false)")
