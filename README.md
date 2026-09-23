@@ -13,7 +13,7 @@ So open your favourite browser and import the generated `bookmarks.html` file, y
 
 ## Requirements
 
-Go 1.25 or newer (only required for building from source).
+Go 1.26 or newer (only required for building from source).
 
 ## Usage
 
