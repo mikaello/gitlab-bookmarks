@@ -3,7 +3,7 @@ package git
 import (
 	"log"
 
-	gitlab "gitlab.com/gitlab-org/api/client-go/v2"
+	gitlab "gitlab.com/gitlab-org/api/client-go/v3"
 )
 
 const perPage = 100
@@ -85,7 +85,7 @@ func findAllProjectsForGroups(c *gitlab.Client, maxPages int, groups []string, i
 
 		groupProjects, err := paginate(maxPages, func(page int64) ([]*gitlab.Project, *gitlab.Response, error) {
 			return c.Groups.ListGroupProjects(groupID, &gitlab.ListGroupProjectsOptions{
-				IncludeSubGroups: gitlab.Ptr(true),
+				IncludeSubGroups: new(true),
 				ListOptions:      gitlab.ListOptions{Page: page, PerPage: perPage},
 			})
 		})

@@ -9,7 +9,7 @@ import (
 	"strings"
 	"time"
 
-	"gitlab.com/gitlab-org/api/client-go/v2"
+	"gitlab.com/gitlab-org/api/client-go/v3"
 )
 
 //go:embed bookmarks.tmpl
