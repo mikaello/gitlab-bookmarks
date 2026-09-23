@@ -33,7 +33,7 @@ Usage of ./gitlab-bookmarks:
   -output string
         path to the bookmarks file to write (default "bookmarks.html")
   -token string
-        a token with API read permissions; without it only public repositories will be fetched
+        a token with API read permissions; defaults to GITLAB_TOKEN; without either only public repositories will be fetched
   -version
         print version information and exit
 ```
@@ -54,6 +54,14 @@ Group projects into namespace folders:
 
 To access private projects you need a [personal access token](https://docs.gitlab.com/user/profile/personal_access_tokens/) with the `read_api` scope.
 Group access tokens or project access tokens with the same scope also work.
+Set the token as an environment variable to keep it out of command history and process arguments:
+
+```shell
+export GITLAB_TOKEN="your-token"
+./gitlab-bookmarks -baseurl https://mycompany.gitlab.com
+```
+
+The `-token` flag remains available and takes precedence over `GITLAB_TOKEN`.
 
 ### Importing the generated file
 
@@ -89,13 +97,14 @@ Run the latest image and write `bookmarks.html` to the current directory:
 ```shell
 docker run --rm \
   --user "$(id -u):$(id -g)" \
+  --env GITLAB_TOKEN \
   --volume "$PWD:/output" \
   ghcr.io/mikaello/gitlab-bookmarks:latest \
   -group some-group
 ```
 
 Add any other options after the image name.
-For example, pass `-token "$GITLAB_TOKEN"` to include private projects.
+The `--env GITLAB_TOKEN` option passes the token from the host environment to include private projects.
 
 ## Development
 

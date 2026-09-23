@@ -36,7 +36,7 @@ func (i *groupFlags) Set(group string) error {
 }
 
 func init() {
-	token = flag.String("token", "", "a token with API read permissions; without it only public repositories will be fetched")
+	token = flag.String("token", "", "a token with API read permissions; defaults to GITLAB_TOKEN; without either only public repositories will be fetched")
 	baseurl = flag.String("baseurl", "https://gitlab.com", "the base url of your GitLab instance, including protocol scheme")
 	output = flag.String("output", "bookmarks.html", "path to the bookmarks file to write")
 	maxPages = flag.Int("maxpages", 5, "the maximum number of pages to fetch, GitLab API is paginated")
@@ -69,6 +69,13 @@ func versionString() string {
 	return "unknown"
 }
 
+func resolveToken(flagToken string) string {
+	if flagToken != "" {
+		return flagToken
+	}
+	return os.Getenv("GITLAB_TOKEN")
+}
+
 func main() {
 	flag.Parse()
 
@@ -87,7 +94,7 @@ func main() {
 	}
 
 	// create a GitLab client
-	client, err := git.Client(*baseurl, *token)
+	client, err := git.Client(*baseurl, resolveToken(*token))
 	if err != nil {
 		log.Fatalf("Error creating GitLab client: %s", err)
 	}
