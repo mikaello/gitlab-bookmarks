@@ -21,7 +21,7 @@ jobs:
           goos: ${{ matrix.goos }}
           goarch: ${{ matrix.goarch }}
           # renovate: datasource=golang-version depName=golang
-          goversion: 1.27.1
+          goversion: 1.27.2
           project_path: .
           ldflags: -s -w -X main.version=${{ github.ref_name }}
           md5sum: false
