@@ -14,7 +14,7 @@ jobs:
         include:
           - go-version: 1.26.0
           # renovate: datasource=golang-version depName=golang
-          - go-version: 1.27.1
+          - go-version: 1.27.2
 
     steps:
     - uses: actions/checkout@v7
